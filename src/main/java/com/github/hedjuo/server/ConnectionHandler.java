@@ -41,8 +41,10 @@ public class ConnectionHandler {
                         logger.info("Received: {}", request.toString());
                         serviceManager.invokeService(request, outgoingStream);
                     } catch (SocketException e) {
+                        client.close();
                         if (e.getMessage().contains("Connection reset")) {
                             logger.info("Client disconnected.");
+                            return;
                         } else {
                             throw e;
                         }
