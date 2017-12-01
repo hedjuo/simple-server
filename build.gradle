@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+group = 'com.github.hedjuo.server'
+version = '0.1'
+
+sourceCompatibility = '1.8'
+
+mainClassName ="com.github.hedjuo.server.App"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
+
+
+    // https://mvnrepository.com/artifact/org.testng/testng
+    testCompile group: 'org.testng', name: 'testng', version: '6.13.1'
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': "com.github.hedjuo.server.App"
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
