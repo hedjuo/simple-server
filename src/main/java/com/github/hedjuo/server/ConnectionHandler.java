@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.concurrent.ExecutionException;
 
 public class ConnectionHandler {
@@ -39,6 +40,12 @@ public class ConnectionHandler {
                         }
                         logger.info("Received: {}", request.toString());
                         serviceManager.invokeService(request, outgoingStream);
+                    } catch (SocketException e) {
+                        if (e.getMessage().contains("Connection reset")) {
+                            logger.info("Client disconnected.");
+                        } else {
+                            throw e;
+                        }
                     } catch (EOFException ignore) {
                         // Client haven't sent anything yet.
                     } catch (ServiceNotFoundException e) {
