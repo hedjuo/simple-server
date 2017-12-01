@@ -32,7 +32,7 @@ public class App {
         System.out.println("Application works in two modes: Server and Test\n");
         System.out.println(
 "Test mode runs specified number of clients and execute them in parallel. Each client does simple service request to server\n" +
-"to get current date. Also to test server's multitasking ClientRunner sends  prior all regular requests the special one to \"pause\"" +
+"to get current date. Also to test server's multitasking ClientRunner sends  prior all regular requests the special one to \"pause\"\n" +
 "the service for specified amount of time.\n");
         System.out.println("Usage:");
         System.out.println("  Run application as Server with following command: java -jar simple-server-0.1.jar server [port number]");
