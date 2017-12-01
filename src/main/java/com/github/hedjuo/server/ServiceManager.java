@@ -15,7 +15,12 @@ import java.util.stream.Collectors;
 public class ServiceManager {
     private static Logger logger = LoggerFactory.getLogger(ServiceManager.class);
 
-    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService executor = new ThreadPoolExecutor(
+            0,
+            Integer.MAX_VALUE,
+            10L,
+            TimeUnit.SECONDS,
+            new SynchronousQueue<>());
 
     private final Map<String, Object> services = new HashMap<>();
     private final Map<String, ServiceMetadata> servicesMeta = new HashMap<>();
@@ -133,6 +138,14 @@ public class ServiceManager {
         return validationErrors;
     }
 
+    /**
+     * @TODO Move loading service logic to ServiceRegistry and Inject it. To make it extendable and flexible create interface also.
+     *
+     * @param className
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
     private void loadService(String className) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         ClassLoader classLoader = getClass().getClassLoader();
         Class clazz = classLoader.loadClass(className);
