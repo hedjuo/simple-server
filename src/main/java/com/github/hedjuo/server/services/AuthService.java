@@ -4,21 +4,16 @@ import com.github.hedjuo.server.annotations.Action;
 import com.github.hedjuo.server.annotations.Service;
 import com.github.hedjuo.server.dto.User;
 
-import java.util.UUID;
+import javax.inject.Inject;
 
 @Service(name = "auth")
 public class AuthService {
 
-    public AuthService() {
-    }
+    @Inject
+    private UUIDService uuidService;
 
     @Action(name = "login")
     public String getCurrentDate(User user) {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return UUID.randomUUID().toString();
+        return uuidService.generateUUID();
     }
 }
