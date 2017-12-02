@@ -4,6 +4,7 @@ import com.github.hedjuo.server.exceptions.ServiceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
@@ -12,19 +13,16 @@ import java.util.concurrent.ExecutionException;
 public class ConnectionHandler {
     private static Logger logger = LoggerFactory.getLogger(ConnectionHandler.class);
 
-    private ServiceManager serviceManager = new ServiceManager();
-
-    public ConnectionHandler() {
-        try {
-            this.serviceManager.init();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    @Inject
+    private ServiceManager serviceManager;
 
     public void registerClient(final Socket client) throws IOException {
 
         new Thread(() -> {
+
+            // Это нужно сделать отдельным классом от Runnable
+            // Думаю для простоты сделать их само уничтожающимися(когда клиент сдох а мы долго про это не знаем)
+
             Thread.currentThread().setName("Client Thread");
             try (
                     ObjectOutputStream outgoingStream = new ObjectOutputStream(client.getOutputStream());
@@ -35,10 +33,14 @@ public class ConnectionHandler {
                     try {
                         final Request request = (Request) incomingStream.readObject();
                         if ("disconnect".equals(request.getMethodName())) {
+                            client.close();
                             logger.info("Client [{}] disconnected. {}", request.getSessionId());
                             return;
                         }
                         logger.info("Received: {}", request.toString());
+
+                        // Тут надо создавать таску и и сабмитить её в ТРЕ
+                        // Как только Future вернёт ответ пишем его в OOS
                         serviceManager.invokeService(request, outgoingStream);
                     } catch (SocketException e) {
                         client.close();
@@ -48,7 +50,7 @@ public class ConnectionHandler {
                         } else {
                             throw e;
                         }
-                    } catch (EOFException ignore) {
+                        } catch (EOFException ignore) {
                         // Client haven't sent anything yet.
                     } catch (ServiceNotFoundException e) {
                         logger.error("Fail to process request.", e);

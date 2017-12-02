@@ -1,5 +1,8 @@
 package com.github.hedjuo.server;
 
+import com.github.hedjuo.server.guice.ServerModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,13 +12,13 @@ import java.net.Socket;
 
 public class Server {
     private static Logger logger = LoggerFactory.getLogger(Server.class);
+    public static Injector INJECTOR = Guice.createInjector(new ServerModule());
 
-    private final int port;
-    private ConnectionHandler connectionHandler = new ConnectionHandler();
+    private ConnectionHandler connectionHandler = INJECTOR.getInstance(ConnectionHandler.class);
 
     public Server(int port) {
         Thread.currentThread().setName("Client Acceptor");
-        this.port = port;
+
         try(final ServerSocket serverSocket = new ServerSocket(port)){
             logger.info("Server started. Listening port {}", port);
             int i = 0;
