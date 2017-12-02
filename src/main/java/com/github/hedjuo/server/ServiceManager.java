@@ -1,13 +1,10 @@
 package com.github.hedjuo.server;
 
-import com.github.hedjuo.server.annotations.Action;
-import com.github.hedjuo.server.annotations.Service;
 import com.github.hedjuo.server.exceptions.ServiceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -116,7 +113,7 @@ public class ServiceManager {
     private List<String> validate(final Request request, final ActionMetadata metadata) {
         List<String> validationErrors = new ArrayList<>();
 
-        if (metadata.parametersCount != request.getParameters().length) {
+        if (metadata.getParametersCount() != request.getParameters().length) {
             validationErrors.add(String.format("Parameters count mismatched. Required: %s, passed: %s", metadata.getParametersCount(), request.getParameters().length));
         }
 
@@ -150,56 +147,7 @@ public class ServiceManager {
         ClassLoader classLoader = getClass().getClassLoader();
         Class clazz = classLoader.loadClass(className);
         ServiceMetadata meta = new ServiceMetadata(clazz);
-        services.put(meta.serviceName, clazz.newInstance());
-        servicesMeta.put(meta.serviceName, meta);
-    }
-
-    private class ServiceMetadata {
-        private final String serviceName;
-        private final Map<String, ActionMetadata> actions;
-
-        public ServiceMetadata(Class<?> service) {
-
-            this.serviceName = service.getAnnotation(Service.class).name();
-
-            this.actions = Arrays.stream(service.getMethods())
-                    .filter(method -> method.isAnnotationPresent(Action.class))
-                    .map(ActionMetadata::new)
-                    .collect(Collectors.toMap(ActionMetadata::getActionName, item -> item));
-        }
-
-        public ActionMetadata getAction(String methodName) {
-            return actions.get(methodName);
-        }
-    }
-
-    private class ActionMetadata {
-        private final String actionName;
-        private final int parametersCount;
-        private final Method method;
-        private final Class<?>[] parameterTypes;
-
-        public ActionMetadata(final Method method) {
-            this.actionName = method.getAnnotation(Action.class).name();
-            this.parametersCount = method.getParameterCount();
-            this.method = method;
-            this.parameterTypes = method.getParameterTypes();
-        }
-
-        public String getActionName() {
-            return actionName;
-        }
-
-        public int getParametersCount() {
-            return parametersCount;
-        }
-
-        public Class<?>[] getParameterTypes() {
-            return parameterTypes;
-        }
-
-        public Method getMethod() {
-            return method;
-        }
+        services.put(meta.getServiceName(), clazz.newInstance());
+        servicesMeta.put(meta.getServiceName(), meta);
     }
 }
