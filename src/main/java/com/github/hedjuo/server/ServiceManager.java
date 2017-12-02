@@ -1,6 +1,7 @@
 package com.github.hedjuo.server;
 
 import com.github.hedjuo.server.exceptions.ServiceNotFoundException;
+import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,50 +20,13 @@ public class ServiceManager {
             TimeUnit.SECONDS,
             new SynchronousQueue<>());
 
-    private final Map<String, Object> services = new HashMap<>();
-    private final Map<String, ServiceMetadata> servicesMeta = new HashMap<>();
-
-    public void init() throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-
-        InputStream input = null;
-        try {
-            try {
-                File file = new File(classLoader.getResource("services.properties").getFile());
-                input = new FileInputStream(file);
-            } catch (FileNotFoundException e) {
-                input = classLoader.getResourceAsStream("services.properties");
-            }
-
-            Properties prop = new Properties();
-            prop.load(input);
-
-            final Enumeration serviceNames = prop.propertyNames();
-            while (serviceNames.hasMoreElements()) {
-                final String serviceClassName = (String) prop.get(serviceNames.nextElement());
-                try {
-                    loadService(serviceClassName);
-                } catch (ClassNotFoundException e) {
-                    logger.error("Unable to load {}", serviceClassName);
-                } catch (IllegalAccessException | InstantiationException e) {
-                    logger.error("Internal server error", e);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            logger.error("Fatal error: configuration file not found. Exit.");
-            System.exit(1);
-
-        } finally {
-            if (input != null) {
-                input.close();
-            }
-        }
-    }
+    @Inject
+    private ServiceLoader serviceLoader;
 
     public void invokeService(final Request request, final ObjectOutputStream outgoingStream) throws ExecutionException, InterruptedException, ServiceNotFoundException {
         final String serviceName = request.getServiceName();
 
-        if (!services.containsKey(serviceName)) {
+        if (!serviceLoader.getServices().containsKey(serviceName)) {
             logger.error("Requested service {} not found ", request.getServiceName());
             throw new ServiceNotFoundException(serviceName);
         }
@@ -78,7 +42,7 @@ public class ServiceManager {
         final String actionName = request.getMethodName();
         final Object[] parameters = request.getParameters();
 
-        final ServiceMetadata serviceMetadata = servicesMeta.get(serviceName);
+        final ServiceMetadata serviceMetadata = serviceLoader.getServices().get(serviceName).getMetadata();
         final ActionMetadata action = serviceMetadata.getAction(actionName);
 
         if (action == null) {
@@ -97,7 +61,7 @@ public class ServiceManager {
             result = errMsg;
         } else {
             try {
-                 result = action.getMethod().invoke(services.get(serviceName), parameters);
+                 result = action.getMethod().invoke(serviceLoader.getServices().get(serviceName).getInstance(), parameters);
                  status = Response.Status.SUCCESS;
                  logger.info("Action [{}_{}] successfully returned: [{}]", serviceName, actionName, result);
             } catch (Exception e) {
@@ -133,21 +97,5 @@ public class ServiceManager {
         }
 
         return validationErrors;
-    }
-
-    /**
-     * @TODO Move loading service logic to ServiceRegistry and Inject it. To make it extendable and flexible create interface also.
-     *
-     * @param className
-     * @throws ClassNotFoundException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     */
-    private void loadService(String className) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        Class clazz = classLoader.loadClass(className);
-        ServiceMetadata meta = new ServiceMetadata(clazz);
-        services.put(meta.getServiceName(), clazz.newInstance());
-        servicesMeta.put(meta.getServiceName(), meta);
     }
 }
