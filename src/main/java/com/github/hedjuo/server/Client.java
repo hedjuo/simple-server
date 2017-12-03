@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Client {
@@ -78,6 +79,11 @@ public class Client {
         } catch (ClassNotFoundException e) {
             logger.error("Unable to parse Response object {}");
             return null;
+        } catch (IOException e) {
+            if (e instanceof SocketException && e.getMessage().toLowerCase().contains("broken pipe")) {
+                throw new ServiceException("Connection closed");
+            }
+            throw e;
         }
     }
 }
