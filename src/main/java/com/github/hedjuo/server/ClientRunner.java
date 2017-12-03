@@ -12,19 +12,19 @@ public class ClientRunner {
 
     public static void run(int portNumber, int clientCount, long delay, int timeout) {
         final AtomicInteger counter = new AtomicInteger(0);
-
         for(int i=0; i < clientCount; i++) {
             new Thread(() -> {
+                int clientNumber = counter.incrementAndGet();
                 try {
                     Client c = new Client("localhost", portNumber, timeout);
-                    logger.error("{} client connected.", counter.incrementAndGet());
+                    logger.error("{} client connected.", clientNumber);
                     c.remoteCall("date-service", "sleep", new Object[]{delay});
                     c.remoteCall("date-service", "now", new Object[]{});
                     c.disconnect();
                 } catch (IOException e) {
                     logger.error("Unable to connect to the Server.", e);
                 } catch (ServiceException e) {
-                    logger.error("Fail with {} client. Exception: [{}]", counter.get(), e.getMessage());
+                    logger.error("Fail with {} client. Exception: [{}]", clientNumber, e.getMessage());
                 }
              }).start();
         }
