@@ -11,7 +11,7 @@ public class Response implements Serializable {
     private final Object result;
 
     public enum Status {
-        SUCCESS, ERROR, SERVICE_NOT_FOUND, ACTION_NOT_FOUND
+        SUCCESS, ERROR, SERVICE_NOT_FOUND, ACTION_NOT_FOUND, CONNECTION_CLOSED
     }
 
     public Response(final String sessionId, final int requestId, final Status status, final Object result) {
