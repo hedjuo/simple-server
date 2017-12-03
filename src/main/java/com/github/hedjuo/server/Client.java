@@ -1,6 +1,9 @@
 package com.github.hedjuo.server;
 
-import com.github.hedjuo.server.exceptions.ServiceNotFoundException;
+import com.github.hedjuo.server.exceptions.client.ActionNotFoundException;
+import com.github.hedjuo.server.exceptions.client.ExecutionFailedException;
+import com.github.hedjuo.server.exceptions.client.ServiceException;
+import com.github.hedjuo.server.exceptions.client.ServiceNotFoundException;
 import com.github.hedjuo.server.dto.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,9 +11,6 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.github.hedjuo.server.Response.Status.ACTION_NOT_FOUND;
-import static com.github.hedjuo.server.Response.Status.SERVICE_NOT_FOUND;
 
 public class Client {
     private static Logger logger = LoggerFactory.getLogger(App.class);
@@ -24,7 +24,7 @@ public class Client {
     private final ObjectOutputStream outgoingStream;
     private final ObjectInputStream incomingStream;
 
-    public Client(final String host, final int port, int timeout) throws IOException {
+    public Client(final String host, final int port, int timeout) throws IOException, ServiceException {
         logger.info("Initialize connection to {}:{}.", host, port);
         synchronized (semaphore) {
             this.socket = new Socket(host, port);
@@ -42,17 +42,22 @@ public class Client {
 
     }
 
-    public void disconnect() throws IOException {
+    public void disconnect() throws IOException, ServiceException {
         if (!socket.isClosed()) {
-            incomingStream.close();
-            outgoingStream.close();
-            socket.close();
+            try {
+                remoteCall("disconnect", "", new Object[]{});
+                logger.info("Disconnected.");
+            } finally {
+                incomingStream.close();
+                outgoingStream.close();
+                socket.close();
+            }
         }
     }
 
-    public Response remoteCall(String serviceName, String methodName, Object[] parameters) throws IOException {
+    public Response remoteCall(String serviceName, String actionName, Object[] parameters) throws IOException, ServiceException {
         try {
-            Request req = new Request(session, requestCounter.incrementAndGet(), serviceName, methodName, parameters);
+            Request req = new Request(session, requestCounter.incrementAndGet(), serviceName, actionName, parameters);
             logger.info("Sending request {}", req.toString());
 
             outgoingStream.writeObject(req);
@@ -61,11 +66,13 @@ public class Client {
 
             final Response response = (Response) incomingStream.readObject();
             logger.info("Received: {}", response.toString());
-            if (SERVICE_NOT_FOUND.equals(response.getStatus())) {
-                throw new ServiceNotFoundException("Service not found");
-            }
-            if (ACTION_NOT_FOUND.equals(response.getStatus())) {
-                throw new ServiceNotFoundException("Method not found");
+            switch (response.getStatus()) {
+                case SERVICE_NOT_FOUND :
+                    throw new ServiceNotFoundException(serviceName);
+                case ACTION_NOT_FOUND:
+                    throw new ActionNotFoundException(actionName);
+                case ERROR:
+                    throw new ExecutionFailedException(serviceName, response.getErrorMessage());
             }
             return response;
         } catch (ClassNotFoundException e) {
