@@ -35,9 +35,7 @@ public class PropertyFileServiceLoader implements ServiceLoader {
                 final String serviceClassName = (String) prop.get(serviceName);
                 try {
                     Class clazz = classLoader.loadClass(serviceClassName);
-                    ServiceMetadata meta = new ServiceMetadata(clazz);
-                    final Object serviceInstance = Server.INJECTOR.getInstance(clazz);
-                    services.put(serviceName, new Service(meta, serviceInstance));
+                    services.put(serviceName, new Service(clazz));
                 } catch (ClassNotFoundException e) {
                     logger.error("Unable to load {}", serviceClassName);
                     throw e;
