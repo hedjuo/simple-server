@@ -9,8 +9,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import static com.github.hedjuo.server.Response.Status.*;
@@ -38,17 +37,23 @@ public class ClientHandlerTask implements Runnable {
             logger.info("Start listening incoming request from client.");
             while (true) {
                 try {
-                    final Request request = (Request) incomingStream.readObject();
-                    if ("disconnect".equals(request.getServiceName())) {
-                        outgoingStream.writeObject(
-                                new Response(
-                                        request.getSessionId(),
-                                        request.getRequestId(),
-                                        CONNECTION_CLOSED,
-                                        null,
-                                        null));
+                    Future<Request> requestFuture = serviceRunner.execute(() -> (Request) incomingStream.readObject());
+                    Request request = null;
+                    try {
+                        request = requestFuture.get(20, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        logger.error("Error: {}", e.getMessage());
+                    }  catch (ExecutionException e) {
+                        logger.error("Unable to parse request object.");
+                    } catch (TimeoutException e) {
+                        logger.info("Client response timeout exceed. Disconnect.");
+                        sendConnectionCloseResponse(outgoingStream, request);
                         socket.close();
-                        logger.info("Client [{}] disconnected.", request.getSessionId());
+                        return;
+                    }
+                    if ("disconnect".equals(request.getServiceName())) {
+                        sendConnectionCloseResponse(outgoingStream, request);
+                        socket.close();
                         return;
                     }
                     logger.info("Received: {}", request.toString());
@@ -116,12 +121,24 @@ public class ClientHandlerTask implements Runnable {
                     }
                 } catch (EOFException ignore) {
                     // Client haven't sent anything yet.
-                } catch (ClassNotFoundException ignore) {
-                    logger.error("Unable to parse request object.");
                 }
             }
         } catch (IOException e) {
             logger.error("Unable to send response due to: {}", e.getMessage());
         }
+    }
+
+    private void sendConnectionCloseResponse(final ObjectOutputStream outgoingStream, final Request request) throws IOException {
+        String sessionId = request != null ? request.getSessionId() : null;
+        int requestId = request != null ? request.getRequestId() : -1;
+
+        outgoingStream.writeObject(
+                new Response(
+                        sessionId,
+                        requestId,
+                        CONNECTION_CLOSED,
+                        null,
+                        null));
+        logger.info("Client [{}] disconnected.", sessionId);
     }
 }
