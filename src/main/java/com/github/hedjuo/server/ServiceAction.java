@@ -4,13 +4,13 @@ import com.github.hedjuo.server.annotations.Action;
 
 import java.lang.reflect.Method;
 
-public class ActionMetadata {
+public class ServiceAction {
     private final String actionName;
     private final int parametersCount;
     private final Method method;
     private final Class<?>[] parameterTypes;
 
-    public ActionMetadata(final Method method) {
+    public ServiceAction(final Method method) {
         this.actionName = method.getAnnotation(Action.class).name();
         this.parametersCount = method.getParameterCount();
         this.method = method;
