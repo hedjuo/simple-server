@@ -13,4 +13,9 @@ public class MultiThreadServiceRunner  implements ServiceRunner {
     public synchronized Future<Object> executeService(RunServiceActionTask task) {
         return executorService.submit(task);
     }
+
+    @Override
+    public <T> Future<T> execute(final Callable<T> callable) {
+        return executorService.submit(callable);
+    }
 }
