@@ -17,11 +17,13 @@ public class App {
                     return;
                 }
 
+                int delay = args.length == 4 ? Integer.valueOf(args[3]) : 1000;
                 int socketTimeout = args.length == 5 ? Integer.valueOf(args[4]) : 0;
-                ClientRunner.run(Integer.valueOf(args[1]), Integer.valueOf(args[2]), Long.valueOf(args[3]), socketTimeout);
+                ClientRunner.run(Integer.valueOf(args[1]), Integer.valueOf(args[2]), delay, socketTimeout);
                 break;
             case "server":
-                ServerRunner.run(Integer.valueOf(args[1]));
+                int maxClientCount = args.length == 3 ? Integer.valueOf(args[2]) : 500;
+                ServerRunner.run(Integer.valueOf(args[1]), maxClientCount);
                 break;
             default:
                 System.out.println("Invalid application mode:\n");
@@ -35,8 +37,8 @@ public class App {
 "to get current date. Also to test server's multitasking ClientRunner sends  prior all regular requests the special one to \"pause\"\n" +
 "the service for specified amount of time.\n");
         System.out.println("Usage:");
-        System.out.println("  Run application as Server with following command: java -jar simple-server-0.1.jar server [port number]");
+        System.out.println("  Run application as Server with following command: java -jar simple-server-0.1.jar server [port number] [max client count]");
         System.out.println("  or");
-        System.out.println("  Run application in test mode with following command: java -jar simple-server-0.1.jar client [port number] [client number] [delay]");
+        System.out.println("  Run application in Test Client mode with following command: java -jar simple-server-0.1.jar client [port number] [client number] [delay]");
     }
 }
