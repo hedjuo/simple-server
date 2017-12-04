@@ -19,9 +19,9 @@ public class ClientHandlerTask implements Runnable {
     private final Map<String, Service> services = Server.INJECTOR.getInstance(ServiceLoader.class).getServices();
     private final Socket socket;
 
-    private ServiceRunner serviceRunner = Server.INJECTOR.getInstance(ServiceRunner.class);
-
-    // last received req time
+    private final ServiceRunner serviceRunner = Server.INJECTOR.getInstance(ServiceRunner.class);
+    private static final ServerConfiguration configuration = Server.INJECTOR.getInstance(ServerConfiguration.class);
+    private static final Semaphore SEMAPHORE = new Semaphore(configuration.getMaxConcurrentExecutionThreads());
 
     public ClientHandlerTask(final Socket socket) {
         this.socket = socket;
@@ -37,10 +37,12 @@ public class ClientHandlerTask implements Runnable {
             logger.info("Start listening incoming request from client.");
             while (true) {
                 try {
+                    SEMAPHORE.acquire();
                     Future<Request> requestFuture = serviceRunner.execute(() -> (Request) incomingStream.readObject());
+                    SEMAPHORE.release();
                     Request request = null;
                     try {
-                        request = requestFuture.get(20, TimeUnit.SECONDS);
+                        request = requestFuture.get(configuration.getClientTimeout(), TimeUnit.MINUTES);
                     } catch (InterruptedException e) {
                         logger.error("Error: {}", e.getMessage());
                     }  catch (ExecutionException e) {
@@ -84,7 +86,9 @@ public class ClientHandlerTask implements Runnable {
                     }
 
                     RunServiceActionTask task = new RunServiceActionTask(service, request.getActionName(), request.getParameters());
+                    SEMAPHORE.acquire();
                     final Future<Object> actionResult = serviceRunner.executeService(task);
+                    SEMAPHORE.release();
 
                     Object result = null;
                     String errMsg = null;
@@ -121,6 +125,7 @@ public class ClientHandlerTask implements Runnable {
                     }
                 } catch (EOFException ignore) {
                     // Client haven't sent anything yet.
+                } catch (InterruptedException ignore) {
                 }
             }
         } catch (IOException e) {
