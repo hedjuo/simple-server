@@ -17,7 +17,7 @@ public class ClientRunner {
                 int clientNumber = counter.incrementAndGet();
                 try {
                     Client c = new Client("localhost", portNumber, timeout);
-                    logger.error("{} client connected.", clientNumber);
+                    logger.info("{} client connected.", clientNumber);
                     c.remoteCall("date-service", "sleep", new Object[]{delay});
                     c.remoteCall("date-service", "now", new Object[]{});
                     c.disconnect();
