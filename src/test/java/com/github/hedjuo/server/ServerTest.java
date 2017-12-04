@@ -1,21 +1,23 @@
 package com.github.hedjuo.server;
 
+import com.github.hedjuo.server.Response.Status;
+import com.github.hedjuo.server.dto.User;
+import com.github.hedjuo.server.exceptions.client.ServiceException;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.io.IOException;
+import java.util.Date;
 
 public class ServerTest {
-    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
-
-    Server s;
 
     int port = 4444;
     @BeforeMethod
     public void setUp() throws Exception {
-        s = new Server(port);
+        new Thread(() -> new Server(port, 15)).start();
+        Thread.currentThread().sleep(2000);
     }
 
     @AfterMethod
@@ -23,55 +25,27 @@ public class ServerTest {
     }
 
     @Test
-    public void testRun() throws Exception {
+    public void testOneClientAuth() {
 
-//        new Thread(() -> {
-//            try {
-//
-//            } catch (Throwable e) {
-//                e.printStackTrace();
-//            }
-//        }).start();
-//
-//        for(int i = 1; i<= 1; i++) {
-//
-//            new Thread(() -> {
-//                try {
-//                    Client client = new Client("localhost", port);
-//
-//                    System.out.println(String.format("Socket created"));
-//
-//                    try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-//                        System.out.println(String.format("Reader created"));
-//                        boolean readInput = true;
-//                        while (readInput) {
-//                            String response = in.readLine();
-//                            System.out.println(String.format(response));
-//                            if (response == null) {
-//                                continue;
-//                            }
-//                            System.out.println(String.format(response));
-//                            Assert.assertTrue(response.startsWith("response"));
-//                            readInput = false;
-//                        }
-//
-//                    } catch (Throwable e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    OpenConnectionProtocol protocol = new OpenConnectionProtocol();
-//
-//                    final String sessionId = protocol.requestConnection(socket);
-//                    System.out.println(String.format("Session id: [%s]", sessionId));
-//                    Assert.assertFalse(Strings.isNullOrEmpty(sessionId));
-//                    client.disconnect();
-//                } catch (SocketException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }).start();
-//        }
+        try {
+            Client c = new Client("localhost", port, 0);
+            c.auth(new User("testUser"));
+        } catch (IOException | ServiceException e) {
+            Assert.fail();
+        }
     }
 
+    @Test
+    public void testOneClientDateService() throws InterruptedException {
+        try {
+            Client c = new Client("localhost", port, 0);
+            c.auth(new User("testUser"));
+            final Response response = c.remoteCall("date-service", "now", new Object[]{});
+            Assert.assertTrue(Status.SUCCESS.equals(response.getStatus()));
+            final Date date = (Date) response.getResult();
+            Assert.assertTrue(date != null);
+        } catch (IOException | ServiceException e) {
+            Assert.fail();
+        }
+    }
 }
