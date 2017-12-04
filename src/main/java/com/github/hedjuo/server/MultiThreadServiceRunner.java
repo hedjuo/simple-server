@@ -3,9 +3,14 @@ package com.github.hedjuo.server;
 import java.util.concurrent.*;
 
 public class MultiThreadServiceRunner  implements ServiceRunner {
+    private final ServerConfiguration configuration = Server.INJECTOR.getInstance(ServerConfiguration.class);
+
+    /**
+     * Customized CachedThreadPool with reduced keepAliveTime value.
+     */
     private final ExecutorService executorService = new ThreadPoolExecutor(
             0,
-            Integer.MAX_VALUE,
+            configuration.getMaxConcurrentExecutionThreads(),
             10L,
             TimeUnit.SECONDS,
             new SynchronousQueue<>());
