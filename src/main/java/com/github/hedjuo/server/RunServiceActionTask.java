@@ -32,6 +32,7 @@ public class RunServiceActionTask implements Callable<Object> {
 
         if (action.getParametersCount() != this.parameters.length) {
             validationErrors.add(String.format("Parameters count for [%s] action mismatched. Required: %s, passed: %s", action.getActionName(), action.getParametersCount(), this.parameters.length));
+            throw new ValidationException(validationErrors);
         }
 
         List<String> parameterTypeErrors = new ArrayList<>();
