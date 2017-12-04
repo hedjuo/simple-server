@@ -1,5 +1,6 @@
 package com.github.hedjuo.server;
 
+import com.github.hedjuo.server.dto.User;
 import com.github.hedjuo.server.exceptions.client.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ public class ClientRunner {
                 try {
                     Client c = new Client("localhost", portNumber, timeout);
                     logger.info("{} client connected.", clientNumber);
+                    c.auth(new User("user"));
                     c.remoteCall("date-service", "sleep", new Object[]{delay});
                     c.remoteCall("date-service", "now", new Object[]{});
                     c.disconnect();

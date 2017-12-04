@@ -17,7 +17,7 @@ public class Client {
     private static Logger logger = LoggerFactory.getLogger(App.class);
 
     private final Socket socket;
-    private final String session;
+    private String session;
     private AtomicInteger requestCounter = new AtomicInteger(0);
 
     private static Object semaphore = new Object();
@@ -35,12 +35,17 @@ public class Client {
 
         outgoingStream = new ObjectOutputStream(socket.getOutputStream());
         incomingStream = new ObjectInputStream(socket.getInputStream());
-
+    }
+    public void auth(final User user) throws ServiceException {
         logger.info("Try to authenticate...");
-        final Response response = remoteCall("auth", "login", new Object[]{new User("user")});
+        final Response response;
+        try {
+            response = remoteCall("auth", "login", new Object[]{user});
+        } catch (IOException e) {
+            throw new ServiceException(String.format("Unable to auth on the server due to: %s", e.getMessage()));
+        }
         this.session = (String) response.getResult();
         logger.info("Client connected! Session ID: {}", this.session);
-
     }
 
     public void disconnect() throws IOException, ServiceException {
