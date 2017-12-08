@@ -47,7 +47,7 @@ public class Client {
             throw new ServiceException(String.format("Unable to auth on the server due to: %s", e.getMessage()));
         }
         this.session = (String) response.getResult();
-        logger.info("Client connected! Session ID: {}", this.session);
+        logger.info("Client authenticated. Session ID: {}", this.session);
     }
 
     public void disconnect() throws IOException, ServiceException {
