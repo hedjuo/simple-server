@@ -1,4 +1,4 @@
-package com.github.hedjuo.server;
+package com.github.hedjuo.common;
 
 import java.io.Serializable;
 

@@ -1,7 +1,8 @@
 package com.github.hedjuo.server;
 
 import com.github.hedjuo.client.Client;
-import com.github.hedjuo.server.Response.Status;
+import com.github.hedjuo.common.Response;
+import com.github.hedjuo.common.Response.Status;
 import com.github.hedjuo.server.dto.User;
 import com.github.hedjuo.client.exceptions.ServiceException;
 import org.testng.Assert;

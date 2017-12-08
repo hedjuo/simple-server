@@ -1,8 +1,8 @@
 package com.github.hedjuo.server.task;
 
-import com.github.hedjuo.server.Request;
-import com.github.hedjuo.server.Response;
-import com.github.hedjuo.server.Response.Status;
+import com.github.hedjuo.common.Request;
+import com.github.hedjuo.common.Response;
+import com.github.hedjuo.common.Response.Status;
 import com.github.hedjuo.server.Server;
 import com.github.hedjuo.server.ServerConfiguration;
 import com.github.hedjuo.server.exceptions.ValidationException;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
-import static com.github.hedjuo.server.Response.Status.*;
+import static com.github.hedjuo.common.Response.Status.*;
 
 public class ClientHandlerTask implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(ClientHandlerTask.class);
