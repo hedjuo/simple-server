@@ -1,6 +1,8 @@
 package com.github.hedjuo.server;
 
 import com.github.hedjuo.server.exceptions.ValidationException;
+import com.github.hedjuo.server.services.metadata.Service;
+import com.github.hedjuo.server.services.metadata.ServiceAction;
 
 import java.util.ArrayList;
 import java.util.List;
