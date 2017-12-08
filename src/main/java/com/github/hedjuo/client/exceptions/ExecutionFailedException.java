@@ -1,4 +1,4 @@
-package com.github.hedjuo.server.exceptions.client;
+package com.github.hedjuo.client.exceptions;
 
 public class ExecutionFailedException extends ServiceException {
     public ExecutionFailedException(String serviceName, String cause) {

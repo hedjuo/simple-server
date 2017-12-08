@@ -2,7 +2,7 @@ package com.github.hedjuo.server;
 
 import com.github.hedjuo.server.Response.Status;
 import com.github.hedjuo.server.dto.User;
-import com.github.hedjuo.server.exceptions.client.ServiceException;
+import com.github.hedjuo.client.exceptions.ServiceException;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;

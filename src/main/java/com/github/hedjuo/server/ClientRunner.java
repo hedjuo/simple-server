@@ -1,7 +1,7 @@
 package com.github.hedjuo.server;
 
 import com.github.hedjuo.server.dto.User;
-import com.github.hedjuo.server.exceptions.client.ServiceException;
+import com.github.hedjuo.client.exceptions.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
