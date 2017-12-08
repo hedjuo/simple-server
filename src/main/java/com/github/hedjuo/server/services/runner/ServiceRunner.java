@@ -1,6 +1,6 @@
 package com.github.hedjuo.server.services.runner;
 
-import com.github.hedjuo.server.RunServiceActionTask;
+import com.github.hedjuo.server.task.RunServiceActionTask;
 
 import java.util.concurrent.*;
 

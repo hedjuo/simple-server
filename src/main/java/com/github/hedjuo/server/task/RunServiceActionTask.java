@@ -1,4 +1,4 @@
-package com.github.hedjuo.server;
+package com.github.hedjuo.server.task;
 
 import com.github.hedjuo.server.exceptions.ValidationException;
 import com.github.hedjuo.server.services.metadata.Service;

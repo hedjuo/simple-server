@@ -1,6 +1,7 @@
 package com.github.hedjuo.server;
 
 import com.github.hedjuo.server.guice.ServerModule;
+import com.github.hedjuo.server.task.ClientHandlerTask;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.slf4j.Logger;
