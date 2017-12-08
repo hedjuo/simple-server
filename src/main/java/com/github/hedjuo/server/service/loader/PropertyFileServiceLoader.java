@@ -1,6 +1,6 @@
-package com.github.hedjuo.server.services.loader;
+package com.github.hedjuo.server.service.loader;
 
-import com.github.hedjuo.server.services.metadata.Service;
+import com.github.hedjuo.server.service.metadata.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

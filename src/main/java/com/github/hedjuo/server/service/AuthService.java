@@ -1,4 +1,4 @@
-package com.github.hedjuo.server.services;
+package com.github.hedjuo.server.service;
 
 import com.github.hedjuo.server.annotations.Action;
 import com.github.hedjuo.server.annotations.Service;

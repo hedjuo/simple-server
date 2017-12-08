@@ -1,4 +1,4 @@
-package com.github.hedjuo.server.services;
+package com.github.hedjuo.server.service;
 
 import java.util.UUID;
 

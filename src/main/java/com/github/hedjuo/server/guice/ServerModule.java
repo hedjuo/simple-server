@@ -1,12 +1,12 @@
 package com.github.hedjuo.server.guice;
 
-import com.github.hedjuo.server.services.AuthService;
-import com.github.hedjuo.server.services.DateService;
-import com.github.hedjuo.server.services.UUIDService;
-import com.github.hedjuo.server.services.loader.PropertyFileServiceLoader;
-import com.github.hedjuo.server.services.loader.ServiceLoader;
-import com.github.hedjuo.server.services.runner.MultiThreadServiceRunner;
-import com.github.hedjuo.server.services.runner.ServiceRunner;
+import com.github.hedjuo.server.service.AuthService;
+import com.github.hedjuo.server.service.DateService;
+import com.github.hedjuo.server.service.UUIDService;
+import com.github.hedjuo.server.service.loader.PropertyFileServiceLoader;
+import com.github.hedjuo.server.service.loader.ServiceLoader;
+import com.github.hedjuo.server.service.runner.MultiThreadServiceRunner;
+import com.github.hedjuo.server.service.runner.ServiceRunner;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;

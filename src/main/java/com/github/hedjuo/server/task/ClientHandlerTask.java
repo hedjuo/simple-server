@@ -6,9 +6,9 @@ import com.github.hedjuo.common.Response.Status;
 import com.github.hedjuo.server.Server;
 import com.github.hedjuo.server.ServerConfiguration;
 import com.github.hedjuo.server.exceptions.ValidationException;
-import com.github.hedjuo.server.services.loader.ServiceLoader;
-import com.github.hedjuo.server.services.metadata.Service;
-import com.github.hedjuo.server.services.runner.ServiceRunner;
+import com.github.hedjuo.server.service.loader.ServiceLoader;
+import com.github.hedjuo.server.service.metadata.Service;
+import com.github.hedjuo.server.service.runner.ServiceRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
