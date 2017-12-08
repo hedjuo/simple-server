@@ -4,6 +4,8 @@ import com.github.hedjuo.server.*;
 import com.github.hedjuo.server.services.AuthService;
 import com.github.hedjuo.server.services.DateService;
 import com.github.hedjuo.server.services.UUIDService;
+import com.github.hedjuo.server.services.loader.PropertyFileServiceLoader;
+import com.github.hedjuo.server.services.loader.ServiceLoader;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;

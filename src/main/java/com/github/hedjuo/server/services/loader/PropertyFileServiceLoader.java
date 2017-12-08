@@ -1,5 +1,6 @@
-package com.github.hedjuo.server;
+package com.github.hedjuo.server.services.loader;
 
+import com.github.hedjuo.server.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
