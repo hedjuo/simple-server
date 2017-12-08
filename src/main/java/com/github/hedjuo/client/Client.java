@@ -1,9 +1,12 @@
-package com.github.hedjuo.server;
+package com.github.hedjuo.client;
 
 import com.github.hedjuo.client.exceptions.ActionNotFoundException;
 import com.github.hedjuo.client.exceptions.ExecutionFailedException;
 import com.github.hedjuo.client.exceptions.ServiceException;
 import com.github.hedjuo.client.exceptions.ServiceNotFoundException;
+import com.github.hedjuo.server.App;
+import com.github.hedjuo.server.Request;
+import com.github.hedjuo.server.Response;
 import com.github.hedjuo.server.dto.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

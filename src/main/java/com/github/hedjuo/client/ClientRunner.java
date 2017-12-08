@@ -1,4 +1,4 @@
-package com.github.hedjuo.server;
+package com.github.hedjuo.client;
 
 import com.github.hedjuo.server.dto.User;
 import com.github.hedjuo.client.exceptions.ServiceException;

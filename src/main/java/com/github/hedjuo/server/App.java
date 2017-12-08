@@ -1,5 +1,7 @@
 package com.github.hedjuo.server;
 
+import com.github.hedjuo.client.ClientRunner;
+
 import java.io.IOException;
 
 public class App {
