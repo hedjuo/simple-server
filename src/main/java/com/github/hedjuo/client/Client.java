@@ -4,7 +4,6 @@ import com.github.hedjuo.client.exceptions.ActionNotFoundException;
 import com.github.hedjuo.client.exceptions.ExecutionFailedException;
 import com.github.hedjuo.client.exceptions.ServiceException;
 import com.github.hedjuo.client.exceptions.ServiceNotFoundException;
-import com.github.hedjuo.server.App;
 import com.github.hedjuo.common.Request;
 import com.github.hedjuo.common.Response;
 import com.github.hedjuo.server.dto.User;
@@ -17,7 +16,7 @@ import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Client {
-    private static Logger logger = LoggerFactory.getLogger(App.class);
+    private static Logger logger = LoggerFactory.getLogger(Client.class);
 
     private final Socket socket;
     private String session;
