@@ -1,6 +1,7 @@
-package com.github.hedjuo.server;
+package com.github.hedjuo;
 
 import com.github.hedjuo.client.ClientRunner;
+import com.github.hedjuo.server.ServerRunner;
 
 import java.io.IOException;
 
