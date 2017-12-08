@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.util.Date;
 
-public class ServerTest {
+public class ClientTest {
 
     int port = 4444;
     @BeforeMethod
