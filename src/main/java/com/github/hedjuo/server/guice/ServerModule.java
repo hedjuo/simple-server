@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URL;
 import java.util.Properties;
 
 public class ServerModule extends AbstractModule {
@@ -43,16 +44,18 @@ public class ServerModule extends AbstractModule {
 
         InputStream input = null;
         try {
-            final String propertyFileName = "services.properties";
-            try {
-                File file = new File(getClass().getClassLoader().getResource(propertyFileName).getFile());
-                input = new FileInputStream(file);
-            } catch (FileNotFoundException e) {
-                input = getClass().getClassLoader().getResourceAsStream(propertyFileName);
+            final String propertyFileName = "server.properties";
+            final URL resource = getClass().getClassLoader().getResource(propertyFileName);
+            if (resource == null) {
+                throw new FileNotFoundException();
             }
+            File file = new File(resource.getFile());
+            input = new FileInputStream(file);
             serverConfig.load(input);
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             logger.info("Server configuration file not found. Load default configuration.");
+        } catch (IOException e) {
+            logger.info("Unable to read server configuration file. Load default configuration.");
         }
         Names.bindProperties(binder(), serverConfig);
     }
